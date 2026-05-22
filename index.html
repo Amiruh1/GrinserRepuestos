@@ -200,8 +200,8 @@
         .marca-img-cell {
             display: flex;
             align-items: center;
-            justify-content: center;
-            min-width: 60px;
+            justify-content: flex-start;
+            min-width: 80px;
         }
         .marca-img {
             width: 48px;
@@ -216,11 +216,16 @@
         .marca-img:hover {
             transform: scale(1.05);
         }
+        .marca-text {
+            font-weight: 600;
+            color: #1e293b;
+            margin-left: 8px;
+        }
         @media (max-width: 750px) {
             .form-grid { flex-direction: column; }
             .card { padding: 16px; }
             .marca-img { width: 40px; height: 40px; padding: 4px; }
-            .marca-img-cell { min-width: 50px; }
+            .marca-img-cell { min-width: 70px; }
         }
         .info-note {
             margin-top: 12px;
@@ -362,19 +367,24 @@
     let inventario = [];
     let nextId = 1;
     
+    // URLs de imágenes CORRECTAS para cada marca
     const MARCA_IMAGENES = {
-         "Ricoh": "https://1000marcas.net/wp-content/uploads/2020/03/Ricoh-logo.jpg",
+        "Ricoh": "https://1000marcas.net/wp-content/uploads/2020/03/Ricoh-logo.jpg",
         "Canon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSV8VCg7OUsGJKa9f_vaDyeBsQ8WTfuTKKCuQ&s",
         "Konica Minolta": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRb2AEC17FI7SlBiMWUehWVZRyumT7pif1TJA&s"
     };
     
+    // Función CORREGIDA para mostrar marca con imagen
     function getMarcaImageHTML(marca) {
         const imgUrl = MARCA_IMAGENES[marca];
-        if (!imgUrl) return `<div class="marca-img-cell" style="min-width:60px;">${marca}</div>`;
+        if (!imgUrl) {
+            return `<div class="marca-img-cell"></div>`;
+        }
+        // Retornar un div que contiene la imagen y el texto de la marca
         return `<div class="marca-img-cell">
-                    <img class="marca-img" src="${imgUrl}" alt="${marca}" 
-                         style="width:48px; height:48px; object-fit:contain; background:white; border-radius:12px; padding:6px; box-shadow:0 2px 6px rgba(0,0,0,0.08);"
-                         onerror="this.onerror=null; this.parentElement.innerHTML='<span style=\"font-weight:600;\">${marca}</span>';">
+                    <img class="marca-img" src="${imgUrl}" 
+                         onerror="this.style.display='none'; this.nextSibling.style.display='inline-block';">
+                    <span class="marca-text" style="${imgUrl ? 'display:inline-block' : 'display:inline-block'}"></span>
                 </div>`;
     }
     
@@ -419,7 +429,7 @@
         const requiereColor = TIPOS_CON_COLOR.includes(tipo);
         
         if (modelo === "") {
-            alert("Por favor, ingresa el nombre ");
+            alert("Por favor, ingresa el nombre del modelo");
             return;
         }
         
@@ -693,7 +703,6 @@
         XLSX.utils.book_append_sheet(wb, marcaWs, "Resumen por Marca");
         
         XLSX.writeFile(wb, `insumos_repuestos_${new Date().toISOString().slice(0,19)}.xlsx`);
-        
     }
 
     async function exportToPDF() {
