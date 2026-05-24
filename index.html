@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Gestión de Insumos y Repuestos | Ricoh, Canon, Konica Minolta</title>
     <!-- Librerías para exportar: SheetJS (XLSX) y jsPDF (PDF) + autoTable -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
@@ -11,60 +11,68 @@
     <style>
         * {
             box-sizing: border-box;
-            font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
+            font-family: system-ui, 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         body {
             background: #f0f2f5;
             margin: 0;
-            padding: 20px;
+            padding: 12px;
         }
         .container {
-            max-width: 1400px;
+            max-width: 100%;
             margin: 0 auto;
         }
         .card {
             background: white;
-            border-radius: 24px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            padding: 20px 24px;
-            margin-bottom: 28px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 16px;
+            margin-bottom: 20px;
             transition: 0.2s;
         }
         .card-title {
-            font-size: 1.6rem;
+            font-size: 1.3rem;
             font-weight: 600;
             margin-top: 0;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
             color: #1e293b;
-            border-left: 5px solid #3b82f6;
-            padding-left: 16px;
+            border-left: 4px solid #3b82f6;
+            padding-left: 12px;
         }
         .form-grid {
             display: flex;
-            flex-wrap: wrap;
-            gap: 18px;
-            align-items: flex-end;
+            flex-direction: column;
+            gap: 12px;
         }
         .field-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            min-width: 140px;
+            gap: 4px;
+            width: 100%;
         }
         .field-group label {
             font-weight: 600;
             color: #334155;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         select, input, button {
-            padding: 10px 14px;
+            padding: 12px 14px;
             border-radius: 14px;
             border: 1px solid #cbd5e1;
             font-size: 0.9rem;
             background: white;
             transition: 0.2s;
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 18px;
         }
         select:focus, input:focus {
             outline: none;
@@ -78,6 +86,11 @@
             border: none;
             cursor: pointer;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            text-align: center;
+            justify-content: center;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         button:hover {
             background: #2563eb;
@@ -95,46 +108,57 @@
         .btn-success:hover {
             background: #059669;
         }
+        .btn-secondary {
+            background: #64748b;
+        }
+        .btn-secondary:hover {
+            background: #475569;
+        }
         .table-wrapper {
             overflow-x: auto;
-            border-radius: 20px;
+            border-radius: 16px;
             border: 1px solid #e2e8f0;
             background: white;
+            -webkit-overflow-scrolling: touch;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
+            font-size: 0.72rem;
+            min-width: 550px;
         }
         th {
             background: #f1f5f9;
-            padding: 14px 10px;
+            padding: 10px 8px;
             text-align: left;
             font-weight: 600;
             color: #0f172a;
+            font-size: 0.68rem;
             border: 1px solid #cbd5e1;
         }
         td {
-            padding: 12px 10px;
+            padding: 8px 6px;
             border-bottom: 1px solid #e2e8f0;
             vertical-align: middle;
             border: 1px solid #e2e8f0;
         }
         .badge {
             background: #e2e8f0;
-            padding: 4px 12px;
-            border-radius: 40px;
-            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 30px;
+            font-size: 0.65rem;
             font-weight: 600;
+            display: inline-block;
+            white-space: nowrap;
         }
         .color-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: 40px;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 30px;
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.65rem;
         }
         .color-magenta { background: #e91e63; color: white; }
         .color-cyan { background: #00bcd4; color: white; }
@@ -143,47 +167,52 @@
         .stock-counter {
             display: flex;
             align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
+            gap: 5px;
+            flex-wrap: nowrap;
         }
         .stock-counter button {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             padding: 0;
-            font-size: 1.2rem;
-            border-radius: 40px;
+            font-size: 1rem;
+            border-radius: 30px;
             background: #e2e8f0;
             color: #0f172a;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         .stock-counter button:active {
             transform: scale(0.92);
         }
         .stock-value {
             font-weight: 700;
-            min-width: 45px;
+            min-width: 30px;
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 0.85rem;
         }
         .empty-row {
             text-align: center;
             color: #64748b;
-            padding: 30px;
+            padding: 24px;
         }
         .action-icons {
             display: flex;
-            gap: 8px;
+            gap: 4px;
             flex-wrap: wrap;
             align-items: center;
+            justify-content: flex-start;
         }
         .icon-btn {
             background: none;
             border: none;
-            font-size: 1.2rem;
+            font-size: 1rem;
             cursor: pointer;
             padding: 4px 8px;
             border-radius: 20px;
             box-shadow: none;
             color: #3b82f6;
+            width: auto;
         }
         .icon-btn:hover {
             background: #f1f5f9;
@@ -193,50 +222,97 @@
         }
         .export-buttons {
             display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-bottom: 20px;
+            gap: 10px;
+            justify-content: stretch;
+            margin-bottom: 16px;
+            flex-direction: row;
+        }
+        .export-buttons button {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.8rem;
         }
         .marca-img-cell {
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            min-width: 80px;
+            min-width: 55px;
+            gap: 6px;
+            flex-wrap: wrap;
         }
         .marca-img {
-            width: 48px;
-            height: 48px;
+            width: 32px;
+            height: 32px;
             object-fit: contain;
-            border-radius: 12px;
+            border-radius: 8px;
             background: #ffffff;
-            padding: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-            transition: transform 0.2s;
-        }
-        .marca-img:hover {
-            transform: scale(1.05);
+            padding: 3px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
         }
         .marca-text {
             font-weight: 600;
             color: #1e293b;
-            margin-left: 8px;
-        }
-        @media (max-width: 750px) {
-            .form-grid { flex-direction: column; }
-            .card { padding: 16px; }
-            .marca-img { width: 40px; height: 40px; padding: 4px; }
-            .marca-img-cell { min-width: 70px; }
-        }
-        .info-note {
-            margin-top: 12px;
-            font-size: 0.8rem;
-            background: #fef9e3;
-            padding: 8px 12px;
-            border-radius: 16px;
-            color: #92400e;
+            font-size: 0.7rem;
         }
         .hidden-field {
             display: none !important;
+        }
+        .info-note {
+            margin-top: 12px;
+            font-size: 0.7rem;
+            background: #fef9e3;
+            padding: 8px 12px;
+            border-radius: 14px;
+            color: #92400e;
+            line-height: 1.4;
+        }
+        @media (min-width: 640px) {
+            body {
+                padding: 20px;
+            }
+            .card {
+                padding: 20px 24px;
+            }
+            .form-grid {
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: flex-end;
+            }
+            .field-group {
+                width: auto;
+                min-width: 140px;
+                flex: 1 0 auto;
+            }
+            .table-wrapper {
+                border-radius: 20px;
+            }
+            th, td {
+                padding: 12px 10px;
+            }
+            .marca-img {
+                width: 40px;
+                height: 40px;
+            }
+        }
+        @media (max-width: 480px) {
+            .stock-counter button {
+                width: 26px;
+                height: 26px;
+                font-size: 0.9rem;
+            }
+            .icon-btn {
+                padding: 3px 6px;
+            }
+            .badge, .color-badge {
+                font-size: 0.6rem;
+                padding: 2px 6px;
+            }
+            .card-title {
+                font-size: 1.1rem;
+            }
+            .marca-text {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -265,7 +341,7 @@
                     <option value="Uñas">Uñas</option>
                     <option value="Thermistores">Thermistores</option>
                     <option value="Chip de cilindro">Chip de cilindro</option>
-                     <option value="Chip de toner">Chip de toner</option>
+                    <option value="Chip de toner">Chip de toner</option>
                     <option value="Banda Adf">Banda Adf</option>
                     <option value="Banda De ITB">Banda de ITB</option> 
                     <option value="Ruedas de Arrastre">Ruedas de Arrastre</option>
@@ -277,8 +353,8 @@
                 </select>
             </div>
             <div class="field-group">
-                <label>Nombre</label>
-                <input type="text" id="nombreModelo" placeholder="" autocomplete="off">
+                <label>Nombre / Modelo</label>
+                <input type="text" id="nombreModelo" placeholder="Ej: MP 4055, iR-ADV C555" autocomplete="off">
             </div>
             <div class="field-group" id="colorGroup">
                 <label>Color</label>
@@ -299,13 +375,15 @@
             </div>
         </div>
         <div class="info-note">
-            ℹ️ Nota: Si el tipo de insumo no requiere color, el campo de color se ocultará automáticamente. Para tipos como Tóner o Chips, asegúrate de seleccionar el color correcto para evitar confusiones en el inventario.
+            💾 <strong>Base de datos local:</strong> Los datos se guardan automáticamente. Al recargar la página se mantiene el inventario.<br>
+            ℹ️ Si el tipo de insumo no requiere color, el campo de color se ocultará automáticamente. Para tipos como Tóner o Chips, selecciona el color correcto.
         </div>
     </div>
 
     <div class="export-buttons">
-        <button id="exportExcelBtn" class="btn-success">📎 Exportar a Excel</button>
-        <button id="exportPdfBtn" class="btn-success">📄 Exportar a PDF</button>
+        <button id="exportExcelBtn" class="btn-success">📎 Excel</button>
+        <button id="exportPdfBtn" class="btn-success">📄 PDF</button>
+        <button id="resetStorageBtn" class="btn-secondary">🗑️ Reiniciar datos</button>
     </div>
 
     <div class="card">
@@ -318,8 +396,8 @@
                         <th>Tipo</th>
                         <th>Modelo</th>
                         <th>Color</th>
-                        <th>Stock (uds)</th>
-                        <th>Contador / Ajuste</th>
+                        <th>Stock</th>
+                        <th>Ajuste</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -333,8 +411,10 @@
 
 <script>
     // ========== CONFIGURACIÓN ==========
+    const STORAGE_KEY = 'insumos_repuestos_inventario';
+    
     // Tipos que SI deben mostrar el campo de Color
-    const TIPOS_CON_COLOR = ["Chips", "Reveladores", "Tóner", "Recargas"];
+    const TIPOS_CON_COLOR = ["Reveladores", "Tóner", "Recargas", "Chip de toner", "Chip de cilindro"];
     
     // Elementos DOM
     const tipoSelect = document.getElementById('tipoSelect');
@@ -347,7 +427,53 @@
     const tableBody = document.getElementById('tableBody');
     const exportExcelBtn = document.getElementById('exportExcelBtn');
     const exportPdfBtn = document.getElementById('exportPdfBtn');
+    const resetStorageBtn = document.getElementById('resetStorageBtn');
 
+    // URLs de imágenes para cada marca
+    const MARCA_IMAGENES = {
+        "Ricoh": "https://1000marcas.net/wp-content/uploads/2020/03/Ricoh-logo.jpg",
+        "Canon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSV8VCg7OUsGJKa9f_vaDyeBsQ8WTfuTKKCuQ&s",
+        "Konica Minolta": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRb2AEC17FI7SlBiMWUehWVZRyumT7pif1TJA&s"
+    };
+    
+    // ========== PERSISTENCIA (localStorage) ==========
+    let inventario = [];
+    let nextId = 1;
+    
+    function guardarEnStorage() {
+        const dataToSave = {
+            inventario: inventario,
+            nextId: nextId
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+    }
+    
+    function cargarDesdeStorage() {
+        const data = localStorage.getItem(STORAGE_KEY);
+        if (data) {
+            try {
+                const parsed = JSON.parse(data);
+                inventario = parsed.inventario || [];
+                nextId = parsed.nextId || 1;
+                return true;
+            } catch(e) {
+                console.error("Error al cargar datos:", e);
+                return false;
+            }
+        }
+        return false;
+    }
+    
+    function reiniciarDatos() {
+        if (confirm("⚠️ ¿Estás seguro de que quieres REINICIAR todos los datos? Se perderá todo el inventario actual.")) {
+            inventario = [];
+            nextId = 1;
+            localStorage.removeItem(STORAGE_KEY);
+            renderizarTabla();
+            alert("✅ Datos reiniciados correctamente.");
+        }
+    }
+    
     // Función para mostrar/ocultar campo de color según el tipo seleccionado
     function toggleColorField() {
         const tipoSeleccionado = tipoSelect.value;
@@ -360,32 +486,16 @@
         }
     }
     
-    // Ejecutar al cargar y al cambiar el tipo
-    tipoSelect.addEventListener('change', toggleColorField);
-    toggleColorField(); // inicializar
-
-    // ========== ESTRUCTURA DE DATOS ==========
-    let inventario = [];
-    let nextId = 1;
-    
-    // URLs de imágenes CORRECTAS para cada marca
-    const MARCA_IMAGENES = {
-        "Ricoh": "https://1000marcas.net/wp-content/uploads/2020/03/Ricoh-logo.jpg",
-        "Canon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSV8VCg7OUsGJKa9f_vaDyeBsQ8WTfuTKKCuQ&s",
-        "Konica Minolta": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRb2AEC17FI7SlBiMWUehWVZRyumT7pif1TJA&s"
-    };
-    
-    // Función CORREGIDA para mostrar marca con imagen
+    // Función para mostrar marca con imagen
     function getMarcaImageHTML(marca) {
         const imgUrl = MARCA_IMAGENES[marca];
         if (!imgUrl) {
-            return `<div class="marca-img-cell"></div>`;
+            return `<div class="marca-img-cell">${marca}</div>`;
         }
-        // Retornar un div que contiene la imagen y el texto de la marca
         return `<div class="marca-img-cell">
-                    <img class="marca-img" src="${imgUrl}" 
-                         onerror="this.style.display='none'; this.nextSibling.style.display='inline-block';">
-                    <span class="marca-text" style="${imgUrl ? 'display:inline-block' : 'display:inline-block'}"></span>
+                    <img class="marca-img" src="${imgUrl}" alt="${marca}" 
+                         onerror="this.style.display='none'; this.parentElement.innerHTML='${marca}'">
+                    <span class="marca-text">${marca}</span>
                 </div>`;
     }
     
@@ -405,7 +515,6 @@
         const tipoRequiereColor = TIPOS_CON_COLOR.includes(tipo);
         
         if (tipoRequiereColor) {
-            // Si requiere color, buscamos coincidencia exacta con modelo y color
             return inventario.find(item => 
                 item.marca === marca && 
                 item.tipo === tipo && 
@@ -413,12 +522,11 @@
                 item.color === color
             );
         } else {
-            // Si NO requiere color, buscamos sin considerar color
             return inventario.find(item => 
                 item.marca === marca && 
                 item.tipo === tipo && 
                 item.modelo === modelo &&
-                (item.color === null || item.color === '')
+                (!item.color || item.color === '')
             );
         }
     }
@@ -441,14 +549,10 @@
         
         let cantidad = parseInt(cantidadInput.value);
         if (isNaN(cantidad) || cantidad < 0) cantidad = 0;
-        if (cantidad === 0) {
-            if (!confirm("¿Agregar 0 unidades? No tendrá efecto.")) return;
-        }
         
         const existente = findExisting(marca, tipo, modelo, color);
         if (existente) {
             existente.stock += cantidad;
-            alert(`✅ Se han sumado ${cantidad} unidades. Nuevo stock: ${existente.stock}`);
         } else {
             inventario.push({ 
                 id: nextId++, 
@@ -458,10 +562,12 @@
                 color: requiereColor ? color : '',
                 stock: cantidad
             });
-            const detalle = requiereColor ? `${tipo} ${color} para ${modelo}` : `${tipo} para ${modelo}`;
-            alert(`✅ Nuevo registro: ${detalle} de ${marca} con ${cantidad} uds.`);
         }
+        
+        guardarEnStorage();
         renderizarTabla();
+        
+        // Limpiar campos
         nombreModeloInput.value = "";
         cantidadInput.value = "1";
     }
@@ -470,6 +576,7 @@
         const item = inventario.find(i => i.id === id);
         if (item && confirm(`¿Eliminar "${item.tipo}${item.color ? ' ' + item.color : ''}" para modelo ${item.modelo} de ${item.marca}?`)) {
             inventario = inventario.filter(i => i.id !== id);
+            guardarEnStorage();
             renderizarTabla();
         }
     }
@@ -485,6 +592,8 @@
             return;
         }
         item.stock = nuevo;
+        guardarEnStorage();
+        
         if (item.stock === 0) {
             setTimeout(() => {
                 if (confirm(`"${item.tipo}${item.color ? ' ' + item.color : ''}" para ${item.modelo} está agotado. ¿Eliminar del inventario?`)) {
@@ -503,7 +612,6 @@
         
         let html = '';
         inventario.forEach(item => {
-            // Mostrar color solo si existe
             const colorHtml = (item.color && item.color !== '') ? getColorBadgeHTML(item.color) : '<span class="badge">—</span>';
             
             html += `<tr>
@@ -548,7 +656,7 @@
         });
     }
 
-    // ========== EXPORTACIÓN A EXCEL CON BORDES NEGROS ==========
+    // ========== EXPORTACIÓN A EXCEL ==========
     function exportToExcel() {
         if (inventario.length === 0) {
             alert("No hay datos para exportar.");
@@ -571,50 +679,8 @@
         const ws = XLSX.utils.aoa_to_sheet(sheetData);
         
         ws['!cols'] = [
-            { wch: 22 },  // Marca
-            { wch: 30 },  // Tipo
-            { wch: 35 },  // Modelo
-            { wch: 14 },  // Color
-            { wch: 18 },  // Stock
-            { wch: 14 }   // Estado
+            { wch: 22 }, { wch: 30 }, { wch: 35 }, { wch: 14 }, { wch: 18 }, { wch: 14 }
         ];
-        
-        const borderStyle = {
-            top: { style: "thin", color: { rgb: "000000" } },
-            bottom: { style: "thin", color: { rgb: "000000" } },
-            left: { style: "thin", color: { rgb: "000000" } },
-            right: { style: "thin", color: { rgb: "000000" } }
-        };
-        
-        const range = XLSX.utils.decode_range(ws['!ref'] || 'A1:F1');
-        for (let R = range.s.r; R <= range.e.r; ++R) {
-            for (let C = range.s.c; C <= range.e.c; ++C) {
-                const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
-                if (!ws[cellAddress]) continue;
-                if (!ws[cellAddress].s) ws[cellAddress].s = {};
-                ws[cellAddress].s.border = borderStyle;
-                
-                if (R === range.s.r) {
-                    ws[cellAddress].s.fill = { patternType: "solid", fgColor: { rgb: "2C6E9E" } };
-                    ws[cellAddress].s.font = { color: { rgb: "FFFFFF" }, bold: true };
-                    ws[cellAddress].s.alignment = { horizontal: "center", vertical: "center" };
-                }
-                if (C === 5 && R > range.s.r) {
-                    const estadoValor = rows[R-1][5];
-                    if (estadoValor === 'AGOTADO') {
-                        ws[cellAddress].s.fill = { patternType: "solid", fgColor: { rgb: "DC2626" } };
-                        ws[cellAddress].s.font = { color: { rgb: "FFFFFF" }, bold: true };
-                    } else {
-                        ws[cellAddress].s.fill = { patternType: "solid", fgColor: { rgb: "10B981" } };
-                        ws[cellAddress].s.font = { color: { rgb: "FFFFFF" }, bold: true };
-                    }
-                    ws[cellAddress].s.alignment = { horizontal: "center", vertical: "center" };
-                }
-                if (C === 4 && R > range.s.r) {
-                    ws[cellAddress].s.alignment = { horizontal: "center", vertical: "center" };
-                }
-            }
-        }
         
         const finalSheetData = [
             [`INVENTARIO DE INSUMOS Y REPUESTOS - FOTOCOPIADORAS`],
@@ -625,46 +691,6 @@
         ];
         
         const finalWs = XLSX.utils.aoa_to_sheet(finalSheetData);
-        
-        const finalRange = XLSX.utils.decode_range(finalWs['!ref'] || 'A1:F100');
-        for (let R = finalRange.s.r; R <= finalRange.e.r; ++R) {
-            for (let C = finalRange.s.c; C <= finalRange.e.c; ++C) {
-                const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
-                if (!finalWs[cellAddress]) continue;
-                if (!finalWs[cellAddress].s) finalWs[cellAddress].s = {};
-                finalWs[cellAddress].s.border = borderStyle;
-                
-                if (R === 0 || R === 1 || R === 2) {
-                    finalWs[cellAddress].s.font = { bold: true, sz: 12 };
-                }
-                if (R === 0) {
-                    finalWs[cellAddress].s.font = { bold: true, sz: 16 };
-                }
-                if (R === 4) {
-                    finalWs[cellAddress].s.fill = { patternType: "solid", fgColor: { rgb: "2C6E9E" } };
-                    finalWs[cellAddress].s.font = { color: { rgb: "FFFFFF" }, bold: true };
-                    finalWs[cellAddress].s.alignment = { horizontal: "center", vertical: "center" };
-                }
-                if (R > 4 && C === 5) {
-                    const rowIndex = R - 5;
-                    if (rowIndex < inventario.length) {
-                        const estadoValor = inventario[rowIndex].stock === 0 ? 'AGOTADO' : 'Disponible';
-                        if (estadoValor === 'AGOTADO') {
-                            finalWs[cellAddress].s.fill = { patternType: "solid", fgColor: { rgb: "DC2626" } };
-                            finalWs[cellAddress].s.font = { color: { rgb: "FFFFFF" }, bold: true };
-                        } else {
-                            finalWs[cellAddress].s.fill = { patternType: "solid", fgColor: { rgb: "10B981" } };
-                            finalWs[cellAddress].s.font = { color: { rgb: "FFFFFF" }, bold: true };
-                        }
-                        finalWs[cellAddress].s.alignment = { horizontal: "center", vertical: "center" };
-                    }
-                }
-                if (R > 4 && C === 4) {
-                    finalWs[cellAddress].s.alignment = { horizontal: "center", vertical: "center" };
-                }
-            }
-        }
-        
         finalWs['!cols'] = [
             { wch: 25 }, { wch: 32 }, { wch: 38 }, { wch: 14 }, { wch: 18 }, { wch: 14 }
         ];
@@ -687,20 +713,6 @@
         const marcaData = [marcaHeaders, ...marcaRows];
         const marcaWs = XLSX.utils.aoa_to_sheet(marcaData);
         marcaWs['!cols'] = [{ wch: 22 }, { wch: 18 }, { wch: 22 }];
-        const marcaRange = XLSX.utils.decode_range(marcaWs['!ref'] || 'A1:C1');
-        for (let R = marcaRange.s.r; R <= marcaRange.e.r; ++R) {
-            for (let C = marcaRange.s.c; C <= marcaRange.e.c; ++C) {
-                const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
-                if (!marcaWs[cellAddress]) continue;
-                if (!marcaWs[cellAddress].s) marcaWs[cellAddress].s = {};
-                marcaWs[cellAddress].s.border = borderStyle;
-                if (R === 0) {
-                    marcaWs[cellAddress].s.fill = { patternType: "solid", fgColor: { rgb: "2C6E9E" } };
-                    marcaWs[cellAddress].s.font = { color: { rgb: "FFFFFF" }, bold: true };
-                    marcaWs[cellAddress].s.alignment = { horizontal: "center", vertical: "center" };
-                }
-            }
-        }
         XLSX.utils.book_append_sheet(wb, marcaWs, "Resumen por Marca");
         
         XLSX.writeFile(wb, `insumos_repuestos_${new Date().toISOString().slice(0,19)}.xlsx`);
@@ -723,20 +735,27 @@
         doc.text("Inventario de Insumos y Repuestos - Fotocopiadoras", 14, 20);
         doc.setFontSize(10);
         doc.text(`Generado: ${new Date().toLocaleString()}`, 14, 30);
-        doc.text("Marcas: Ricoh, Canon, Konica Minolta", 14, 38);
+        doc.text(`Total de registros: ${inventario.length}`, 14, 38);
         doc.autoTable({
             head: [tableColumn], body: tableRows, startY: 45, theme: 'striped',
-            headStyles: { fillColor: [41, 112, 165], textColor: 255, fontSize: 10, fontStyle: 'bold', lineWidth: 0.5, lineColor: [0,0,0] },
-            bodyStyles: { fontSize: 8, lineWidth: 0.3, lineColor: [0,0,0] },
-            columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 32 }, 2: { cellWidth: 45 }, 3: { cellWidth: 20 }, 4: { cellWidth: 16 }, 5: { cellWidth: 18 } },
-            alternateRowStyles: { fillColor: [240, 248, 255] }, margin: { left: 10, right: 10 }
+            headStyles: { fillColor: [41, 112, 165], textColor: 255, fontSize: 9, fontStyle: 'bold', lineWidth: 0.5, lineColor: [0,0,0] },
+            bodyStyles: { fontSize: 7, lineWidth: 0.3, lineColor: [0,0,0] },
+            columnStyles: { 0: { cellWidth: 24 }, 1: { cellWidth: 30 }, 2: { cellWidth: 40 }, 3: { cellWidth: 18 }, 4: { cellWidth: 16 }, 5: { cellWidth: 16 } },
+            alternateRowStyles: { fillColor: [240, 248, 255] }, margin: { left: 8, right: 8 }
         });
         doc.save(`insumos_repuestos_${new Date().toISOString().slice(0,19)}.pdf`);
     }
 
+    // Event listeners
+    tipoSelect.addEventListener('change', toggleColorField);
     agregarBtn.addEventListener('click', agregarItem);
     exportExcelBtn.addEventListener('click', exportToExcel);
     exportPdfBtn.addEventListener('click', exportToPDF);
+    resetStorageBtn.addEventListener('click', reiniciarDatos);
+    
+    // Inicializar
+    toggleColorField();
+    cargarDesdeStorage();
     renderizarTabla();
 </script>
 </body>
